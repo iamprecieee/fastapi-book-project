@@ -18,7 +18,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd hng12-stage2-fastapi-book-project
+            cd fastapi-book-project
             git pull origin main
             source venv/bin/activate
             pip install -r requirements.txt

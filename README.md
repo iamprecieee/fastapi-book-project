@@ -51,7 +51,7 @@ fastapi-book-project/
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/iamprecieee/hng12-stage2-fastapi-book-project.git
+git clone https://github.com/iamprecieee/fastapi-book-project.git
 cd hng12-stage2-fastapi-book-project
 ```
 
@@ -156,8 +156,8 @@ sudo apt update && sudo apt install nginx python3-venv python3-full -y
 
 Clone the repository and prepare the Python environment:
 ```bash
-git clone https://github.com/iamprecieee/hng12-stage2-fastapi-book-project.git
-cd hng12-stage2-fastapi-book-project
+git clone https://github.com/iamprecieee/fastapi-book-project.git
+cd fastapi-book-project
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -189,9 +189,9 @@ After=network.target
 
 [Service]
 User=ubuntu
-WorkingDirectory=/home/ubuntu/hng12-stage2-fastapi-book-project
-Environment="PATH=/home/ubuntu/hng12-stage2-fastapi-book-project/venv/bin"
-ExecStart=/home/ubuntu/hng12-stage2-fastapi-book-project/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
+WorkingDirectory=/home/ubuntu/fastapi-book-project
+Environment="PATH=/home/ubuntu/fastapi-book-project/venv/bin"
+ExecStart=/home/ubuntu/fastapi-book-project/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
 
 [Install]
 WantedBy=multi-user.target
