@@ -43,14 +43,16 @@ fastapi-book-project/
 - Pydantic
 - pytest
 - uvicorn
+- Nginx
+- AWS EC2
 
 ## Installation
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/hng12-devbotops/fastapi-book-project.git
-cd fastapi-book-project
+git clone https://github.com/iamprecieee/hng12-stage2-fastapi-book-project.git
+cd hng12-stage2-fastapi-book-project
 ```
 
 2. Create a virtual environment:
@@ -128,6 +130,77 @@ The API includes proper error handling for:
 - Invalid book IDs
 - Invalid genre types
 - Malformed requests
+
+
+## Deployment Guide
+
+### AWS EC2 Setup
+
+1. Launch an ubuntu-based EC2 instance through the AWS Console
+2. Download and securely store your key pair file (`.pem`)
+3. Configure security groups to allow inbound traffic on ports 22 (SSH), 80 (HTTP), and 443 (HTTPS)
+
+### Server Configuration
+
+First, establish an SSH connection to your EC2 instance:
+
+```bash
+ssh -i path/to/your-key.pem ubuntu@your-ec2-public-ip
+```
+Once connected, update the system and install required packages:
+```bash
+sudo apt update && sudo apt install nginx python3-venv python3-full -y
+```
+
+### Application Setup
+
+Clone the repository and prepare the Python environment:
+```bash
+git clone https://github.com/iamprecieee/hng12-stage2-fastapi-book-project.git
+cd hng12-stage2-fastapi-book-project
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Nginx Configuration
+
+Replace the default Nginx configuration:
+```bash
+sudo rm /etc/nginx/nginx.conf
+sudo nano /etc/nginx/nginx.conf
+```
+Add the configuration from `nginx.conf.example`, replacing `$SERVER_NAME` with your instance's public DNS, and apply:
+```bash
+sudo systemctl restart nginx
+```
+
+### FastAPI service Configuration
+
+Create a systemd service file for the FastAPI application:
+```bash
+sudo nano /etc/systemd/system/fastapi.service
+```
+Add the following configuration:
+```bash
+[Unit]
+Description=FastAPI Book Project
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/hng12-stage2-fastapi-book-project
+Environment="PATH=/home/ubuntu/hng12-stage2-fastapi-book-project/venv/bin"
+ExecStart=/home/ubuntu/hng12-stage2-fastapi-book-project/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
+
+[Install]
+WantedBy=multi-user.target
+```
+Enable and start the service:
+```bash
+sudo systemctl enable fastapi
+sudo systemctl start fastapi
+```
 
 ## Contributing
 

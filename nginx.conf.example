@@ -1,0 +1,73 @@
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+error_log /var/log/nginx/error.log;
+
+# Event module configuration
+events {
+    worker_connections 768;
+    use epoll;
+    multi_accept on;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # logging configuration
+    error_log /var/log/nginx/error.log debug;
+    access_log /var/log/nginx/access.log;
+
+    server_tokens off;
+
+    # Timeouts
+    keepalive_timeout 60;
+    keepalive_requests 100;
+
+    # Buffer sizes
+    client_body_buffer_size 10M;
+    sendfile on;
+
+    # TCP options for improving performance
+    tcp_nopush on;
+    tcp_nodelay on;
+    types_hash_max_size 2048;
+
+    gzip on;
+
+    # Upstream fastAPI configuration
+    upstream fastapi {
+        server 127.0.0.1:8000;
+        keepalive 32;
+    }
+
+    server {
+        listen 80;
+        server_name $SERVER_NAME;
+
+        location = /favicon.ico {
+            access_log off;
+            log_not_found off;
+        }
+
+        # Main location block for proxying requests to FastAPI
+        location / {
+            proxy_pass http://fastapi;
+            proxy_http_version 1.1;
+            proxy_buffering off;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /static/ {
+            alias /staticfiles/;
+            try_files $uri $uri/ =404;
+        }
+    }
+}
+
+
