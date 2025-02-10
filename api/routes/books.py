@@ -64,7 +64,7 @@ async def get_books() -> OrderedDict[int, Book]:
     },
     status_code=status.HTTP_200_OK
 )
-async def get_book(book_id: int) -> Book | JSONResponse:
+async def get_book(book_id: int) -> Book:
     """
     Return a book with all the information:
     
@@ -80,7 +80,7 @@ async def get_book(book_id: int) -> Book | JSONResponse:
     if book_data:
         return JSONResponse(
             status_code=status.HTTP_200_OK,
-            content=book_data.model_dump()["title"]
+            content=book_data.model_dump()
         )
     else:
         return JSONResponse(
