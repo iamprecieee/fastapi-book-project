@@ -48,6 +48,47 @@ async def get_books() -> OrderedDict[int, Book]:
     return db.get_books()
 
 
+@router.get("/{book_id}",
+    response_model=Book,
+    responses={
+        404: {
+            "description": "Not Found Error",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Book not found"
+                    }
+                }
+            }
+        }
+    },
+    status_code=status.HTTP_200_OK
+)
+async def get_book(book_id: int) -> Book:
+    """
+    Return a book with all the information:
+    
+    - **id**: Unique identifier for the book.
+    - **title**: Title of the book.
+    - **author**: Author of the book.
+    - **publication_year**: Year the book was published.
+    - **genre**: Genre of the book.
+    \f
+    :param book_id: Book ID.
+    """
+    book_data = db.get_book(book_id)
+    if book_data:
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=book_data.model_dump()
+        )
+    else:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"detail": "Book not found"},
+        )
+
+
 @router.put("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
 async def update_book(book_id: int, book: Book) -> Book:
     return JSONResponse(
